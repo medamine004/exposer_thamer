@@ -364,11 +364,7 @@
                 <a href="#prob-3" class="prob-link">3. Le paradigme de la confiance implicite</a>
                 <a href="#prob-4" class="prob-link">4. Conséquences de l'injection (RCE)</a>
                 <a href="#prob-5" class="prob-link">5. Exploitation via XSS</a>
-                <a href="#prob-6" class="prob-link">6. Fuite de mémoire (Memory Leak)</a>
-                <a href="#prob-7" class="prob-link">7. Déni de Service (DoS) applicatif</a>
-                <a href="#prob-8" class="prob-link">8. Obfuscation et contournement WAF</a>
-                <a href="#prob-9" class="prob-link">9. Principe de moindre privilège</a>
-                <a href="#prob-10" class="prob-link">10. Remédiation et Secure SDLC</a>
+                <a href="#prob-6" class="prob-link">6. Remédiation et Secure SDLC</a>
             </div>
         </div>
     </section>
@@ -520,125 +516,12 @@
         </div>
     </section>
 
-    <section id="prob-6" class="section prob-section alt-bg">
-        <div class="container reveal slide-right">
-            <div class="prob-header">
-                <span class="prob-num">Prob 06</span>
-                <h3 class="glow-text">Comment une chaîne de format peut-elle détruire la confidentialité (Memory Leak) ?</h3>
-            </div>
-            <div class="glass-card full-width-card">
-                <div class="prob-content">
-                    <div class="text-col">
-                        <h4>Réponse Académique</h4>
-                        <p>L'exploitation de la mémoire via les Format Strings permet le contournement total des mécanismes de confidentialité de l'application. Un attaquant peut procéder à un "Dump" (une copie sauvage) de la mémoire RAM allouée au programme en cours d'exécution.</p>
-                        <h4>Explication Technique</h4>
-                        <p>En utilisant séquentiellement des spécificateurs de lecture (comme <code>%x</code> pour l'hexadécimal ou <code>%s</code> pour lire une chaîne à un pointeur donné), l'attaquant remonte la pile d'exécution. La mémoire contenant souvent des variables d'environnement, la confidentialité est violée.</p>
-                    </div>
-                    <div class="example-col">
-                        <h4>Exemple Concret</h4>
-                        <div class="code-box warning-box">
-                            <strong>Impact d'un Memory Leak :</strong><br>
-                            En balayant la mémoire d'un daemon applicatif vulnérable (comme un serveur FTP mal codé), l'attaquant peut retrouver en clair :<br>
-                            - Les clés de chiffrement privées (RSA/AES)<br>
-                            - Les mots de passe administrateur non hashés<br>
-                            - Les jetons d'accès API (Tokens OAuth)
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="prob-7" class="section prob-section">
-        <div class="container reveal slide-left">
-            <div class="prob-header">
-                <span class="prob-num">Prob 07</span>
-                <h3 class="glow-text">De quelle manière ces vulnérabilités mènent-elles au Déni de Service (DoS) ?</h3>
-            </div>
-            <div class="glass-card full-width-card">
-                <div class="prob-content">
-                    <div class="text-col">
-                        <h4>Réponse Académique</h4>
-                        <p>Le pilier de la "Disponibilité" (Availability de la triade CIA) peut être anéanti par un attaquant cherchant à crasher intentionnellement l'application via une entrée corrompue ou une chaîne de format mortelle, provoquant un <strong>Déni de Service (DoS) applicatif</strong>.</p>
-                        <h4>Explication Technique</h4>
-                        <p>Dans le cas d'une Format String, si l'attaquant utilise le spécificateur <code>%s</code>, le programme tentera de lire la chaîne située à l'adresse mémoire de la prochaine valeur de la pile. Si cette valeur est <code>0x00000000</code> (adresse invalide), le système d'exploitation interviendra et tuera le processus via une <span class="highlight-red">Erreur de Segmentation (SegFault)</span>.</p>
-                    </div>
-                    <div class="example-col">
-                        <h4>Exemple Concret</h4>
-                        <div class="code-box error-box">
-                            <span class="comment">// Saisie provoquant le crash immédiat</span><br>
-                            <strong>Payload :</strong> <code>%s%s%s%s%s%s%s%s%s%s</code><br><br>
-                            <strong>Résultat (Syslog) :</strong><br>
-                            <code>Process 4092 (server.exe) killed by SIGSEGV (Segmentation fault) at address 0x0.</code><br>
-                            <span class="comment">-> L'application s'arrête, les utilisateurs légitimes ne peuvent plus y accéder.</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="prob-8" class="section prob-section alt-bg">
-        <div class="container reveal slide-right">
-            <div class="prob-header">
-                <span class="prob-num">Prob 08</span>
-                <h3 class="glow-text">Quelles techniques d'obfuscation contournent les filtres de sécurité basiques ?</h3>
-            </div>
-            <div class="glass-card full-width-card">
-                <div class="prob-content">
-                    <div class="text-col">
-                        <h4>Réponse Académique</h4>
-                        <p>Les pare-feux applicatifs (WAF) ou les développeurs utilisent souvent des "listes noires" (Blacklists) naïves qui bloquent des mots spécifiques (ex: <code>SELECT</code>, <code>&lt;script&gt;</code>). Les attaquants utilisent l'<strong>obfuscation</strong> et l'encodage pour muter leur code malveillant afin de passer sous les radars.</p>
-                        <h4>Explication Technique</h4>
-                        <p>Les moteurs de base de données et les navigateurs sont permissifs. Ils peuvent décoder à la volée des syntaxes complexes. L'encodage URL (Percent-encoding), l'Hexadécimal, la manipulation de casse ou le double-encodage sont utilisés pour fragmenter la signature de l'attaque.</p>
-                    </div>
-                    <div class="example-col">
-                        <h4>Exemple Concret</h4>
-                        <div class="code-box warning-box">
-                            <strong>Filtre en place :</strong> Le mot <code>script</code> est bloqué.<br><br>
-                            <strong>Contournement 1 (Changement de balise) :</strong><br>
-                            <code>&lt;img src="x" onerror="alert(1)"&gt;</code><br><br>
-                            <strong>Contournement 2 (Encodage URL dans un paramètre) :</strong><br>
-                            <code>%3Cscript%3Ealert%281%29%3C%2Fscript%3E</code>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="prob-9" class="section prob-section">
-        <div class="container reveal slide-left">
-            <div class="prob-header">
-                <span class="prob-num">Prob 09</span>
-                <h3 class="glow-text">Quel est le rôle salvateur du principe de moindre privilège ?</h3>
-            </div>
-            <div class="glass-card full-width-card">
-                <div class="prob-content">
-                    <div class="text-col">
-                        <h4>Réponse Académique</h4>
-                        <p>En cybersécurité, il faut admettre qu'une compromission finira par arriver. Le principe de moindre privilège (Principle of Least Privilege - PoLP) agit comme une cloison étanche. Il garantit qu'un processus ne dispose que des droits strictement nécessaires à son fonctionnement légitime.</p>
-                        <h4>Explication Technique</h4>
-                        <p>Si une vulnérabilité d'entrée permet une RCE (exécution de commande), l'attaquant héritera des droits du processus compromis. Si le serveur web s'exécute en tant que super-administrateur (Root), le système entier est perdu. S'il s'exécute en tant qu'utilisateur restreint, l'impact (Blast Radius) est considérablement réduit.</p>
-                    </div>
-                    <div class="example-col">
-                        <h4>Exemple Concret</h4>
-                        <div class="code-box success-box">
-                            <strong>Mauvaise configuration :</strong><br>
-                            Service Apache tournant sous <code>root</code>. Une faille donne le contrôle total du serveur à l'attaquant.<br><br>
-                            <strong>Architecture sécurisée (PoLP) :</strong><br>
-                            Service Apache tournant sous l'utilisateur <code>www-data</code>. Même si l'attaquant exploite une faille, il ne pourra pas installer de backdoors persistantes ni lire les fichiers du noyau Linux.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+   
 
     <section id="prob-10" class="section prob-section alt-bg">
         <div class="container reveal slide-right">
             <div class="prob-header">
-                <span class="prob-num">Prob 10</span>
+                <span class="prob-num">Prob 6</span>
                 <h3 class="glow-text">Quelles sont les stratégies d'éradication applicables dès la phase de conception ?</h3>
             </div>
             <div class="glass-card full-width-card">
